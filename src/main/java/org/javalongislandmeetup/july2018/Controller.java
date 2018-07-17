@@ -25,11 +25,13 @@ import java.io.IOException;
 @RestController
 public class Controller {
 
-	String bucket_name = "sdsdfsfsdfsdfsdF";
-	String key_name = "fhghfghfhfghfghgf";
+	String bucket_name = "longislandjavameetupjuly2018";
+	String key_name = "gradlew.bat";
 
 	@RequestMapping(value = "/listfiles", method = RequestMethod.GET)
 	public String listS3Files() {
+
+		StringBuilder sb = new StringBuilder ();
 
 		System.out.format("Objects in S3 bucket %s:\n", bucket_name);
 		final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
@@ -37,13 +39,16 @@ public class Controller {
 		List<S3ObjectSummary> objects = result.getObjectSummaries();
 		for (S3ObjectSummary os: objects) {
 			System.out.println("* " + os.getKey());
+			sb.append (os.getKey());
+			sb.append (" + ");
 		}
 
-		return "blah";
+		return sb.toString();
 	}
 
 	@RequestMapping(value = "/readfile", method = RequestMethod.GET)
 	public String readS3File() {
+		StringBuilder sb = new StringBuilder ();
 		final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
 		try {
 			S3Object o = s3.getObject(bucket_name, key_name);
@@ -53,6 +58,7 @@ public class Controller {
 			int read_len = 0;
 			while ((read_len = s3is.read(read_buf)) > 0) {
 				fos.write(read_buf, 0, read_len);
+				sb.append (String.valueOf (read_buf), 0, read_len);
 			}
 			s3is.close();
 			fos.close();
@@ -68,7 +74,7 @@ public class Controller {
 		}
 		System.out.println("Done!");
 
-		return "blah";
+		return sb.toString();
 	}
 
 }
